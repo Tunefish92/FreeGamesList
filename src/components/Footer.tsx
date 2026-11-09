@@ -2,9 +2,9 @@ import { Coffee } from "lucide-react";
 import type { Dict } from "@/lib/i18n";
 import type { SourceStatus } from "@/lib/types";
 
-/** Author of this site; a name, so never translated. */
+/** Author of this site (a name, so never translated); the link opens the source code. */
 const AUTHOR = "Tunefish";
-const AUTHOR_URL = "https://github.com/Tunefish92";
+const REPO_URL = "https://github.com/Tunefish92/FreeGamesList";
 /** Voluntary tips; the same link as in the author's other projects. */
 const SUPPORT_URL = "https://paypal.me/tunefish92";
 const SUPPORT_LABEL = "paypal.me/tunefish92";
@@ -88,7 +88,7 @@ export default function Footer({ t, sources, updatedAt }: { t: Dict; sources: So
       <div className="container app-footer__bottom">
         <span>
           © {new Date(updatedAt).getFullYear()} by{" "}
-          <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer">
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
             {AUTHOR}
           </a>
         </span>
