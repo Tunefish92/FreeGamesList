@@ -14,14 +14,14 @@ Public repo Tunefish92/FreeGamesList, hosted on GitHub Pages; no server, no Dock
 - `src/components/GamesApp.tsx` – picks region/language in the browser (?cc= / ?lang=, else
   `navigator.languages`) and fetches the matching JSON; the HTML is the same for everyone
 - `src/lib/sources/` – one fetcher per store
-- `.github/workflows/publish.yml` – daily 14:00 UTC + push to main + manual: restore the database
+- `.github/workflows/publish.yml` – every 6 h (00/06/12/18 Europe/Berlin) + push to main + manual: restore the database
   from the Actions cache, run the worker, build, deploy to Pages
 
 ## Commands
 
 ```bash
 npm run update                   # fetch all stores, write public/data (1–2 min, real network)
-npm run update -- --if-stale     # only when the last good update is > 20 h old
+npm run update -- --if-stale     # only when the last good update is > 5 h old
 npm run dev                      # http://localhost:3000, reads public/data
 PAGES_BASE_PATH=/FreeGamesList npm run build   # static site in out/, as on github.io
 ```

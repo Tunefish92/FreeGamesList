@@ -27,7 +27,8 @@ them.
 
 There is no server. Everything runs on GitHub:
 
-1. Once a day (14:00 UTC) the [Update and publish](.github/workflows/publish.yml) workflow fetches
+1. Every 6 hours (00:00, 06:00, 12:00 and 18:00 German time) the
+   [Update and publish](.github/workflows/publish.yml) workflow fetches
    the stores' public data: Epic Games Store, Steam, GOG, FreeToGame and CheapShark. A store that
    fails is retried 3 times, 10 minutes apart; if it still fails, the list keeps that store's
    last good data.
@@ -66,9 +67,10 @@ is built for the domain's root instead of `/FreeGamesList`. With Cloudflare, kee
 | `STEAM_FREE_LIMIT` | `1000` | How many Steam free-to-play games to fetch |
 | `STEAM_DLC_LIMIT` | `200` | How many free Steam DLC to fetch |
 | `MIN_GAMES` | `100` | A list with fewer games is treated as broken and not replaced |
-| `STALE_AFTER_H` | `20` | A push fetches the stores only when the last good update is older than this |
+| `STALE_AFTER_H` | `5` | A push fetches the stores only when the last good update is older than this |
 
-The time of the daily run is the `cron` line in the workflow (in UTC).
+The run times are the `cron` line in the workflow, in the time zone of the `timezone` line below it.
+GitHub often starts scheduled runs a few minutes late, most of all at the full hour.
 
 GitHub switches off scheduled workflows in a repository that had no commit for 60 days. It emails
 you before that; **Actions → Update and publish → Enable workflow** turns it back on.
@@ -85,7 +87,7 @@ npm run lint
 npm run build    # static site in out/
 ```
 
-`npm run update -- --if-stale` skips fetching when the last good update is less than 20 hours old.
+`npm run update -- --if-stale` skips fetching when the last good update is less than 5 hours old.
 
 ## Privacy
 

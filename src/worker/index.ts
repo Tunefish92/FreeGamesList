@@ -13,8 +13,8 @@ import { runUpdate } from "./update";
  * failed after the retries (the stored lists are exported anyway), 2 when there is no list at all.
  */
 const OUT_DIR = process.env.OUT_DIR ?? "public/data";
-/** A push refetches when the last good update is older than this (e.g. the scheduled run failed). */
-const STALE_AFTER_H = Number(process.env.STALE_AFTER_H ?? 20);
+/** A push refetches when the last good update is older than this (runs are 6 hours apart; e.g. one failed). */
+const STALE_AFTER_H = Number(process.env.STALE_AFTER_H ?? 5);
 
 /** Prints a line with a timestamp, like the update log. */
 function log(message: string) {
