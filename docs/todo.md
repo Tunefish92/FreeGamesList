@@ -2,7 +2,7 @@
 
 ## 1. Host FreeGamesList on GitHub instead of Unraid
 
-**Status:** live at https://tunefish92.github.io/FreeGamesList/ (pushed 2026-11-09), custom domain open · **Reported:** 2026-11-09
+**Status:** live at https://freegames.tunefishservers.net (2026-11-09), first scheduled run open · **Reported:** 2026-11-09
 
 > Change everything in a way, it works on github, like its doing now.
 > this is my repo: https://github.com/Tunefish92/FreeGamesList
@@ -19,8 +19,8 @@ on the server; the bundle in `/mnt/filesharing/unraid-share/freegameslist/` is o
 - [x] Push to GitHub, Settings → Pages → Source: GitHub Actions (set via API)
 - [x] First workflow run: all stores answer GitHub's runners (30/30 lists, 0 failed, 68 s)
 - [x] Second run (push) restores the database from the cache and skips fetching
-- [ ] Custom domain (freegameslist. or freegames.tunefishservers.net): Cloudflare CNAME →
-      tunefish92.github.io (DNS only), Pages custom domain, Enforce HTTPS, run the workflow again
+- [x] Custom domain freegames.tunefishservers.net: Cloudflare CNAME → tunefish92.github.io
+      (DNS only), Pages custom domain, HTTPS enforced; github.io forwards to it
 - [ ] Delete the obsolete Unraid bundle from the share
 
 **Done when** the site loads at its address with today's lists, and the next day's scheduled run

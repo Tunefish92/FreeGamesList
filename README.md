@@ -5,7 +5,7 @@
 Every free PC game in one list: current giveaways you can keep, free-to-play games and free DLC
 from Steam, Epic Games, GOG and more, for 15 regions in German and English.
 
-**➜ [tunefish92.github.io/FreeGamesList](https://tunefish92.github.io/FreeGamesList/)**
+**➜ [freegames.tunefishservers.net](https://freegames.tunefishservers.net/)**
 
 ## What it shows
 
