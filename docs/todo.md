@@ -2,7 +2,7 @@
 
 ## 1. Host FreeGamesList on GitHub instead of Unraid
 
-**Status:** built and tested locally on `main` (not pushed) · **Reported:** 2026-11-09
+**Status:** live at https://tunefish92.github.io/FreeGamesList/ (pushed 2026-11-09), custom domain open · **Reported:** 2026-11-09
 
 > Change everything in a way, it works on github, like its doing now.
 > this is my repo: https://github.com/Tunefish92/FreeGamesList
@@ -16,8 +16,8 @@ on the server; the bundle in `/mnt/filesharing/unraid-share/freegameslist/` is o
 - [x] Workflow `publish.yml`: Actions cache for the database, worker, build, deploy to Pages
 - [x] Tested locally: full update (30/30 lists), skip when fresh, build under `/FreeGamesList`,
       German/Austria and US/English guesses, fallback to "list is being built", actionlint clean
-- [ ] Push to GitHub, Settings → Pages → Source: GitHub Actions
-- [ ] First workflow run: do the store APIs answer GitHub's runners (Steam, Epic, GOG)?
+- [x] Push to GitHub, Settings → Pages → Source: GitHub Actions (set via API)
+- [x] First workflow run: all stores answer GitHub's runners (30/30 lists, 0 failed, 68 s)
 - [ ] Second run (push) restores the database from the cache and skips fetching
 - [ ] Custom domain (freegameslist. or freegames.tunefishservers.net): Cloudflare CNAME →
       tunefish92.github.io (DNS only), Pages custom domain, Enforce HTTPS, run the workflow again
