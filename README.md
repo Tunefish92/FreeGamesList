@@ -116,4 +116,8 @@ you'd like to say thanks, you can buy me a coffee:
 It's entirely voluntary and a thank-you only: it doesn't buy features or priority, and the site
 stays the same for everyone. Please don't send money as "Friends and Family" on PayPal.
 
+## License
+
+MIT, see [LICENSE](LICENSE).
+
 Not affiliated with any of the stores listed. All trademarks belong to their respective owners.
