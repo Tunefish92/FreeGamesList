@@ -18,7 +18,7 @@ on the server; the bundle in `/mnt/filesharing/unraid-share/freegameslist/` is o
       German/Austria and US/English guesses, fallback to "list is being built", actionlint clean
 - [x] Push to GitHub, Settings → Pages → Source: GitHub Actions (set via API)
 - [x] First workflow run: all stores answer GitHub's runners (30/30 lists, 0 failed, 68 s)
-- [ ] Second run (push) restores the database from the cache and skips fetching
+- [x] Second run (push) restores the database from the cache and skips fetching
 - [ ] Custom domain (freegameslist. or freegames.tunefishservers.net): Cloudflare CNAME →
       tunefish92.github.io (DNS only), Pages custom domain, Enforce HTTPS, run the workflow again
 - [ ] Delete the obsolete Unraid bundle from the share
