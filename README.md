@@ -1,5 +1,7 @@
 # FreeGamesList
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/tunefish92)
+
 Every free PC game in one list: current giveaways you can keep, free-to-play games and free DLC
 from Steam, Epic Games, GOG and more, for 15 regions in German and English.
 
