@@ -14,7 +14,7 @@ Public repo Tunefish92/FreeGamesList, hosted on GitHub Pages; no server, no Dock
 - `src/components/GamesApp.tsx` – picks region/language in the browser (?cc= / ?lang=, else
   `navigator.languages`) and fetches the matching JSON; the HTML is the same for everyone
 - `src/lib/sources/` – one fetcher per store
-- `.github/workflows/publish.yml` – every 6 h (00/06/12/18 Europe/Berlin) + push to main + manual: restore the database
+- `.github/workflows/publish.yml` – every 6 h (00/06/12/18 UTC) + push to main + manual: restore the database
   from the Actions cache, run the worker, build, deploy to Pages
 
 ## Commands

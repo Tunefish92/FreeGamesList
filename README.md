@@ -27,7 +27,7 @@ them.
 
 There is no server. Everything runs on GitHub:
 
-1. Every 6 hours (00:00, 06:00, 12:00 and 18:00 German time) the
+1. Every 6 hours (00:00, 06:00, 12:00 and 18:00 UTC) the
    [Update and publish](.github/workflows/publish.yml) workflow fetches
    the stores' public data: Epic Games Store, Steam, GOG, FreeToGame and CheapShark. A store that
    fails is retried 3 times, 10 minutes apart; if it still fails, the list keeps that store's
@@ -69,7 +69,7 @@ is built for the domain's root instead of `/FreeGamesList`. With Cloudflare, kee
 | `MIN_GAMES` | `100` | A list with fewer games is treated as broken and not replaced |
 | `STALE_AFTER_H` | `5` | A push fetches the stores only when the last good update is older than this |
 
-The run times are the `cron` line in the workflow, in the time zone of the `timezone` line below it.
+The run times are the `cron` line in the workflow, in UTC.
 GitHub often starts scheduled runs a few minutes late, most of all at the full hour.
 
 GitHub switches off scheduled workflows in a repository that had no commit for 60 days. It emails

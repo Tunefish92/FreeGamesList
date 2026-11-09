@@ -5,12 +5,10 @@ name: Update and publish
 # older than 5 hours). "Run workflow" in the Actions tab fetches everything now.
 on:
   schedule:
-    # 00:00, 06:00, 12:00 and 18:00 German time, summer time included (Epic's Thursday game
-    # switches at 17:00 and shows up at 18:00). GitHub often starts scheduled runs late,
-    # especially at the full hour, and switches them off after 60 days without a commit
-    # (one click turns them on again).
+    # 00:00, 06:00, 12:00 and 18:00 UTC (01/07/13/19 in Germany in winter, an hour later in
+    # summer). GitHub often starts scheduled runs late, especially at the full hour, and switches
+    # them off after 60 days without a commit (one click turns them on again).
     - cron: "0 0,6,12,18 * * *"
-      timezone: "Europe/Berlin"
   push:
     branches: [main]
   workflow_dispatch:
