@@ -1,0 +1,100 @@
+name: Update and publish
+
+# Fetches every store once a day and publishes the site with the new lists on GitHub Pages.
+# A push to main publishes site changes with the stored lists (and fetches only when they are
+# older than 20 hours). "Run workflow" in the Actions tab fetches everything now.
+on:
+  schedule:
+    # 14:00 UTC = 15:00 in Germany in winter, 16:00 in summer. GitHub often starts scheduled
+    # runs late, and switches them off after 60 days without a commit (one click turns them on).
+    - cron: "0 14 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One publish at a time; a newer run waits instead of cancelling an update half way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Fetch stores & publish
+    runs-on: ubuntu-latest
+    # Three retries 10 minutes apart fit easily.
+    timeout-minutes: 90
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      DB_PATH: data/freegames.db
+      OUT_DIR: public/data
+      RETRY_ATTEMPTS: 3
+      RETRY_DELAY_MIN: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # The worker's database (last good result per store, run log) lives in the Actions cache
+      # between runs. Without it (first run, or evicted) the worker simply fetches everything.
+      - name: Restore the database
+        uses: actions/cache/restore@v6
+        with:
+          path: data
+          key: freegames-db-${{ github.run_id }}
+          restore-keys: freegames-db-
+
+      # Failing stores don't stop the publish: the lists keep their last good data, and the
+      # last step marks the run red so GitHub emails you.
+      - name: Fetch the stores
+        id: update
+        continue-on-error: true
+        run: npm run update -- ${{ github.event_name == 'push' && '--if-stale' || '' }}
+
+      - name: Save the database
+        if: always() && hashFiles('data/freegames.db') != ''
+        uses: actions/cache/save@v6
+        with:
+          path: data
+          key: freegames-db-${{ github.run_id }}
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      # base_path is "/FreeGamesList" on tunefish92.github.io and "" with a custom domain.
+      - name: Build the site
+        run: npm run build
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: out
+
+      - name: Publish to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v5
+
+      - name: Report a failed store update
+        if: steps.update.outcome == 'failure'
+        run: |
+          echo "::error::Fetching the stores failed or some stores still failed after the retries; the site shows their last good data. See the 'Fetch the stores' step."
+          exit 1

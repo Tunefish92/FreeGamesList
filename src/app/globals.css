@@ -1067,6 +1067,27 @@ select.header-control option {
   color: var(--color-text);
 }
 
+.empty .btn {
+  margin-top: 1rem;
+}
+
+/* Spinner while the list loads. */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation-duration: 3s;
+  }
+}
+
 .app-footer {
   margin-top: auto;
   border-top: 1px solid var(--color-border);

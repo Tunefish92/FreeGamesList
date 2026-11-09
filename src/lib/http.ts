@@ -1,4 +1,4 @@
-const USER_AGENT = "FreeGamesList/1.0 (+https://github.com/; free games aggregator)";
+const USER_AGENT = "FreeGamesList/1.0 (+https://github.com/Tunefish92/FreeGamesList; free games aggregator)";
 
 export async function fetchJson<T>(url: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(url, {

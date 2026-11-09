@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreeGamesList
 
-## Getting Started
+Every free PC game in one list: current giveaways you can keep, free-to-play games and free DLC
+from Steam, Epic Games, GOG and more, for 15 regions in German and English.
 
-First, run the development server:
+**➜ [tunefish92.github.io/FreeGamesList](https://tunefish92.github.io/FreeGamesList/)**
+
+## What it shows
+
+- **Free to keep**: games that cost nothing for a limited time (Epic's weekly games, Steam −100 %
+  deals, GOG giveaways), with the normal price and a countdown until the offer ends
+- **Coming soon**: giveaways that are already announced
+- **Free-to-play** games and **free DLC**, grouped by genre
+- Search by title, publisher or store, filters for store, device (Windows, macOS, Linux,
+  consoles, phones) and game mode (single player, multiplayer, co-op, online, playable offline),
+  sorting by ending soon, popularity, value or name
+- Prices in your region's currency: Germany, Austria, Switzerland, France, Italy, Spain, the
+  Netherlands, Belgium, Poland, Sweden, the UK, the US, Canada, Australia and Brazil
+- German and English, light and dark mode
+
+The site picks region and language from your browser's language; the switches at the top change
+them.
+
+## How it works
+
+There is no server. Everything runs on GitHub:
+
+1. Once a day (14:00 UTC) the [Update and publish](.github/workflows/publish.yml) workflow fetches
+   the stores' public data: Epic Games Store, Steam, GOG, FreeToGame and CheapShark. A store that
+   fails is retried 3 times, 10 minutes apart; if it still fails, the list keeps that store's
+   last good data.
+2. It builds one finished list per region and language (`data/DE-de.json`, `data/US-en.json`, …)
+   and a `data/status.json` with the time of the last update and any store that failed.
+3. It builds the website as static files and publishes it with the lists on GitHub Pages. Your
+   browser loads the page and the one list it needs.
+
+Between runs, the fetched data is kept in the workflow's cache. If the cache is gone, the next run
+fetches everything again. A push to `main` publishes site changes right away with the stored
+lists; **Actions → Update and publish → Run workflow** fetches everything now.
+
+When a run fails or a store still fails after the retries, the run turns red and GitHub emails
+you; the site keeps showing the last good lists.
+
+## Run your own copy
+
+1. Fork this repository.
+2. **Settings → Pages → Build and deployment → Source:** choose **GitHub Actions**.
+3. **Actions** tab: enable workflows for the fork, then **Update and publish → Run workflow**.
+   The first run takes 2–3 minutes; the site is then at `https://<your-name>.github.io/FreeGamesList/`.
+
+**Your own domain:** add a `CNAME` record for it at your DNS provider pointing to
+`<your-name>.github.io`, then enter the domain under **Settings → Pages → Custom domain**, wait
+for the certificate and tick **Enforce HTTPS**. Run the workflow once more afterwards, so the site
+is built for the domain's root instead of `/FreeGamesList`. With Cloudflare, keep the record on
+**DNS only** (grey cloud) until GitHub has issued the certificate.
+
+**Settings** are environment variables in the workflow's `env:` block:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `UPDATE_REGIONS` | all 15 | Only these regions, e.g. `DE,AT,CH` |
+| `RETRY_ATTEMPTS` | `3` | How often a failed store is retried |
+| `RETRY_DELAY_MIN` | `10` | Minutes between retries |
+| `STEAM_FREE_LIMIT` | `1000` | How many Steam free-to-play games to fetch |
+| `STEAM_DLC_LIMIT` | `200` | How many free Steam DLC to fetch |
+| `MIN_GAMES` | `100` | A list with fewer games is treated as broken and not replaced |
+| `STALE_AFTER_H` | `20` | A push fetches the stores only when the last good update is older than this |
+
+The time of the daily run is the `cron` line in the workflow (in UTC).
+
+GitHub switches off scheduled workflows in a repository that had no commit for 60 days. It emails
+you before that; **Actions → Update and publish → Enable workflow** turns it back on.
+
+## Develop
+
+Needs Node.js 24 or newer (the worker uses the built-in `node:sqlite`).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run update   # fetches all stores into data/freegames.db and writes public/data (1–2 minutes)
+npm run dev      # http://localhost:3000
+npm run lint
+npm run build    # static site in out/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run update -- --if-stale` skips fetching when the last good update is less than 20 hours old.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Privacy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+No ads, no affiliate links, no cookies, no analytics. The site only saves your light/dark choice
+in your own browser. GitHub Pages hosts the site, and game pictures load straight from the stores'
+servers, so both see your IP address. Deals from CheapShark open through CheapShark's own redirect
+link.
 
-## Learn More
+## A note about this project
 
-To learn more about Next.js, take a look at the following resources:
+I'm a hobby programmer with an interest in coding and software development. I can read and write
+code, but for this project, I used Claude AI as a development assistant to help me turn my ideas
+into a working project.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+I believe AI is a useful tool for learning, experimenting, and bringing ideas to life. I want to be
+transparent about how this project was created and acknowledge the role AI played in its
+development.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Buy me a coffee
 
-## Deploy on Vercel
+FreeGamesList is free, without ads, and it will stay that way. If it helped you grab a game and
+you'd like to say thanks, you can buy me a coffee:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**☕ [paypal.me/tunefish92](https://paypal.me/tunefish92)**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+It's entirely voluntary and a thank-you only: it doesn't buy features or priority, and the site
+stays the same for everyone. Please don't send money as "Friends and Family" on PayPal.
+
+Not affiliated with any of the stores listed. All trademarks belong to their respective owners.

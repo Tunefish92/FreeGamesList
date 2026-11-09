@@ -35,6 +35,9 @@ const de = {
   from: "ab",
   showAll: "Alle anzeigen",
   showLess: "Weniger anzeigen",
+  loadFailed: "Die Spieleliste konnte nicht geladen werden.",
+  loadFailedHint: "Prüf deine Internetverbindung und versuch es noch einmal.",
+  retry: "Neu laden",
   empty: "Keine Spiele gefunden.",
   emptyHint: "Versuch einen anderen Suchbegriff oder setz die Filter zurück.",
   value: "Wert",
@@ -51,12 +54,12 @@ const de = {
     note: {
       title: "Über diese Seite",
       intro:
-        "Ich bin Hobby-Programmierer und betreibe FreeGamesList aus Spaß in meiner Freizeit, auf meinem eigenen Server. Dahinter steht keine Firma.",
+        "Ich bin Hobby-Programmierer und mache FreeGamesList aus Spaß in meiner Freizeit. Dahinter steht keine Firma, und der Code ist offen auf GitHub.",
       money: "Kein Geld im Spiel: keine Werbung, keine Affiliate-Links, keine bezahlten Platzierungen.",
       privacy:
         "Kein Tracking: keine Cookies, keine Statistik-Dienste. Gespeichert wird nur dein Hell/Dunkel-Modus, in deinem Browser. Region und Sprache errät die Seite aus deiner Browsersprache.",
       outside:
-        "Spielbilder kommen direkt von den Servern der Stores; die sehen dabei deine IP-Adresse. Angebote von CheapShark öffnen über deren eigenen Weiterleitungslink.",
+        "Die Seite liegt bei GitHub Pages, die Spielbilder kommen direkt von den Servern der Stores; beide sehen dabei deine IP-Adresse. Angebote von CheapShark öffnen über deren eigenen Weiterleitungslink.",
       ai: "Programmiert mit Claude (KI) als Entwicklungsassistent.",
       support: "Wenn dir die Seite gefällt und du Danke sagen willst, kannst du mir einen Kaffee spendieren:",
       button: "Kaffee spendieren",
@@ -121,6 +124,9 @@ const en: Dict = {
   from: "from",
   showAll: "Show all",
   showLess: "Show less",
+  loadFailed: "The game list couldn't be loaded.",
+  loadFailedHint: "Check your internet connection and try again.",
+  retry: "Reload",
   empty: "No games found.",
   emptyHint: "Try a different search term or reset the filters.",
   value: "Value",
@@ -137,12 +143,12 @@ const en: Dict = {
     note: {
       title: "About this site",
       intro:
-        "I'm a hobby programmer and run FreeGamesList for fun in my spare time, on my own server. There's no company behind it.",
+        "I'm a hobby programmer and make FreeGamesList for fun in my spare time. There's no company behind it, and the code is open on GitHub.",
       money: "No money involved: no ads, no affiliate links, no paid placements.",
       privacy:
         "No tracking: no cookies, no analytics. The only thing saved is your light/dark choice, in your own browser. Region and language are guessed from your browser's language.",
       outside:
-        "Game pictures load straight from the stores' servers, which see your IP address. CheapShark deals open through CheapShark's own redirect link.",
+        "The site is hosted on GitHub Pages and game pictures load straight from the stores' servers; both see your IP address. CheapShark deals open through CheapShark's own redirect link.",
       ai: "Built with Claude (AI) as a development assistant.",
       support: "If you like the site and want to say thanks, you can buy me a coffee:",
       button: "Buy me a coffee",

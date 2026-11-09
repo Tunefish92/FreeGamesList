@@ -1,21 +1,27 @@
 # Open items, newest last
 
-## 1. Host FreeGamesList on Unraid as Docker, with install and update like Beichtstuhl
+## 1. Host FreeGamesList on GitHub instead of Unraid
 
-**Status:** done locally, not yet run on the real Unraid · **Reported:** 2026-11-09
+**Status:** built and tested locally on `main` (not pushed) · **Reported:** 2026-11-09
 
-> Add the same install for this app like for Beichtstuhl repo. I want to just host it on unraid as
-> docker, with install, update functionality, make the same procedure as Beichtstuhl
+> Change everything in a way, it works on github, like its doing now.
+> this is my repo: https://github.com/Tunefish92/FreeGamesList
+
+The private Unraid install (Docker, `unraid/install-local.sh`) was dropped before it was ever run
+on the server; the bundle in `/mnt/filesharing/unraid-share/freegameslist/` is obsolete.
 
 **Plan**
-- [x] `unraid/install-local.sh` (install, update with backup + data check + automatic rollback, rollback)
-- [x] `unraid/build-local.sh` builds the bundle into `/mnt/filesharing/unraid-share/freegameslist/`
-- [x] Tested locally with renamed copies: install, update, broken image → rollback, emptied
-      database → rollback, failed backup → old version starts again, manual rollback
-- [x] Bundle built and copied to the share (commit 97edf83-dirty)
-- [ ] User runs `bash /mnt/user/filesharing/unraid-share/freegameslist/install.sh` on Unraid
-- [ ] Docker tab shows both containers with icon, WebUI opens the site
-- [ ] Cloudflare Tunnel: freegames.tunefishservers.net → http://10.0.0.10:8092
+- [x] Worker exports `public/data/<CC>-<lang>.json` + `status.json`, `--if-stale` for pushes
+- [x] Static export, region/language chosen in the browser, CSP as meta tag, `BASE_PATH`
+- [x] Workflow `publish.yml`: Actions cache for the database, worker, build, deploy to Pages
+- [x] Tested locally: full update (30/30 lists), skip when fresh, build under `/FreeGamesList`,
+      German/Austria and US/English guesses, fallback to "list is being built", actionlint clean
+- [ ] Push to GitHub, Settings → Pages → Source: GitHub Actions
+- [ ] First workflow run: do the store APIs answer GitHub's runners (Steam, Epic, GOG)?
+- [ ] Second run (push) restores the database from the cache and skips fetching
+- [ ] Custom domain (freegameslist. or freegames.tunefishservers.net): Cloudflare CNAME →
+      tunefish92.github.io (DNS only), Pages custom domain, Enforce HTTPS, run the workflow again
+- [ ] Delete the obsolete Unraid bundle from the share
 
-**Done when** freegames.tunefishservers.net shows the list served from Unraid and a second
-`install.sh` run (update) ends with "All N game lists are still there".
+**Done when** the site loads at its address with today's lists, and the next day's scheduled run
+is green.

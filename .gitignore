@@ -43,3 +43,6 @@ next-env.d.ts
 # local database and worker bundle
 /data
 /dist
+
+# GitHub Pages: exported game lists (worker) and the static build
+/public/data

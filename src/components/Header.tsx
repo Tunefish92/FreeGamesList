@@ -2,6 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { BASE_PATH } from "@/lib/basePath";
 import type { Dict, Lang } from "@/lib/i18n";
 import { REGIONS } from "@/lib/regions";
 import ThemeToggle from "./ThemeToggle";
@@ -39,7 +40,7 @@ export default function Header({ t, lang, country, query, onQuery }: Props) {
       <div className="container app-header__inner">
         <a href={`?cc=${country}&lang=${lang}`} className="app-header__brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="" width={30} height={30} className="app-header__logo" />
+          <img src={`${BASE_PATH}/logo.svg`} alt="" width={30} height={30} className="app-header__logo" />
           <h1 className="app-header__name">
             FreeGames<span>List</span>
           </h1>

@@ -1,14 +1,15 @@
-import { existsSync, mkdirSync } from "node:fs";
+import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { Lang } from "./i18n";
 import type { Game, GamesPayload } from "./types";
 
 /**
- * Local SQLite cache. The worker writes, the website only reads:
+ * The worker's SQLite cache, kept between GitHub Actions runs (actions/cache):
  * - source_data: last successful result per source/region/language (kept when a fetch fails)
- * - snapshots:   finished payload per region/language, served to every visitor
- * - runs:        log of every update run, used for health checks
+ * - snapshots:   finished payload per region/language, exported as the site's JSON files
+ * - runs:        log of every update run, exported as status.json
+ * Only the worker uses it; the static website reads the exported JSON files.
  */
 const DB_PATH = process.env.DB_PATH ?? "./data/freegames.db";
 
@@ -66,11 +67,6 @@ function open(): DatabaseSync {
     );
   `);
   return db;
-}
-
-/** The website must not create an empty database before the worker has run. */
-export function dbExists(): boolean {
-  return db !== null || existsSync(/* turbopackIgnore: true */ DB_PATH);
 }
 
 // ---------------------------------------------------------------------------
@@ -133,7 +129,7 @@ export function startRun(): number {
   return Number(result.lastInsertRowid);
 }
 
-/** Runs still "running" when the worker starts were interrupted (crash, container restart). */
+/** Runs still "running" when the worker starts were interrupted (crash, cancelled job). */
 export function markInterruptedRuns(): void {
   open()
     .prepare(`UPDATE runs SET status = 'failed', finished_at = ?, details = '{"error":"interrupted"}' WHERE status = 'running'`)
@@ -146,16 +142,16 @@ export function finishRun(id: number, status: RunRow["status"], details: unknown
     .run(new Date().toISOString(), status, JSON.stringify(details), id);
 }
 
-// ---------------------------------------------------------------------------
-// Website side (read only)
-// ---------------------------------------------------------------------------
+/** One stored game list, with its payload still as the JSON text written by saveSnapshot. */
+export interface SnapshotRow {
+  country: string;
+  lang: string;
+  payload: string;
+}
 
-export function getSnapshot(country: string, lang: Lang): GamesPayload | null {
-  if (!dbExists()) return null;
-  const row = open().prepare(`SELECT payload FROM snapshots WHERE country = ? AND lang = ?`).get(country, lang) as
-    | { payload: string }
-    | undefined;
-  return row ? (JSON.parse(row.payload) as GamesPayload) : null;
+/** Every stored game list, for the export to the static site. */
+export function getAllSnapshots(): SnapshotRow[] {
+  return open().prepare(`SELECT country, lang, payload FROM snapshots ORDER BY country, lang`).all() as unknown as SnapshotRow[];
 }
 
 function toRun(r: Record<string, string | number | null> | undefined): RunRow | null {
@@ -169,13 +165,13 @@ function toRun(r: Record<string, string | number | null> | undefined): RunRow | 
   };
 }
 
+/** The newest update run, whatever its status. */
 export function getLastRun(): RunRow | null {
-  if (!dbExists()) return null;
   return toRun(open().prepare(`SELECT * FROM runs ORDER BY id DESC LIMIT 1`).get() as Record<string, string>);
 }
 
+/** The newest update run that finished with status "success". */
 export function getLastSuccessfulRun(): RunRow | null {
-  if (!dbExists()) return null;
   return toRun(
     open().prepare(`SELECT * FROM runs WHERE status = 'success' ORDER BY id DESC LIMIT 1`).get() as Record<string, string>,
   );

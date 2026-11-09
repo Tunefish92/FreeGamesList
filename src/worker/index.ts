@@ -1,54 +1,50 @@
-import { Cron } from "croner";
 import { getLastSuccessfulRun, markInterruptedRuns } from "../lib/db";
+import { exportSnapshots } from "./export";
 import { runUpdate } from "./update";
 
 /**
- * Background worker: the only process that talks to the store APIs.
- *   node worker.js          → runs on CRON_SCHEDULE (default daily at 15:00)
- *   node worker.js --once   → one update now, exit code 0 on success
+ * One worker run, as the GitHub Actions job (.github/workflows/publish.yml) uses it:
+ *   node worker.mjs              → fetch all stores now, then export the lists
+ *   node worker.mjs --if-stale   → fetch only when the last good update is older than STALE_AFTER_H
+ *                                  (a push that only changes the site doesn't refetch everything)
+ * Afterwards every stored list is written to OUT_DIR (default public/data) for the static build.
+ *
+ * Exit code: 0 when the update succeeded or wasn't needed, 1 when it failed or some stores still
+ * failed after the retries (the stored lists are exported anyway), 2 when there is no list at all.
  */
-const SCHEDULE = process.env.CRON_SCHEDULE ?? "0 15 * * *";
-const TIMEZONE = process.env.TZ ?? "Europe/Berlin";
-/** Catch up on start when the last good update is older than this (e.g. server was down at 15:00). */
-const STALE_AFTER_H = 24;
+const OUT_DIR = process.env.OUT_DIR ?? "public/data";
+/** A push refetches when the last good update is older than this (e.g. the scheduled run failed). */
+const STALE_AFTER_H = Number(process.env.STALE_AFTER_H ?? 20);
 
+/** Prints a line with a timestamp, like the update log. */
 function log(message: string) {
   console.log(`[${new Date().toISOString()}] ${message}`);
 }
 
-async function safeUpdate() {
-  try {
-    await runUpdate();
-  } catch (err) {
-    log(`Update crashed: ${err instanceof Error ? err.stack : err}`);
-  }
+/** Hours since the last successful update; Infinity when there was none. */
+function hoursSinceLastSuccess(): number {
+  const last = getLastSuccessfulRun();
+  return last ? (Date.now() - new Date(last.startedAt).getTime()) / 3_600_000 : Infinity;
 }
 
+/** Runs the update when needed, exports the lists and sets the exit code. */
 async function main() {
   markInterruptedRuns();
 
-  if (process.argv.includes("--once")) {
-    const ok = await runUpdate();
-    process.exit(ok ? 0 : 1);
+  let ok = true;
+  const ageH = hoursSinceLastSuccess();
+  if (process.argv.includes("--if-stale") && ageH <= STALE_AFTER_H) {
+    log(`Last successful update is ${ageH.toFixed(1)}h old — no update needed`);
+  } else {
+    ok = await runUpdate();
   }
 
-  const job = new Cron(SCHEDULE, { timezone: TIMEZONE, protect: true, name: "update" }, safeUpdate);
-  log(`Worker started — schedule "${SCHEDULE}" (${TIMEZONE}), next run ${job.nextRun()?.toISOString()}`);
-
-  const last = getLastSuccessfulRun();
-  const ageH = last ? (Date.now() - new Date(last.startedAt).getTime()) / 3_600_000 : Infinity;
-  if (ageH > STALE_AFTER_H) {
-    log(last ? `Last successful update is ${ageH.toFixed(1)}h old — updating now` : "No data yet — updating now");
-    void safeUpdate();
+  const count = exportSnapshots(OUT_DIR);
+  log(`Exported ${count} game list(s) to ${OUT_DIR}`);
+  if (count === 0) {
+    process.exit(2);
   }
-
-  const stop = () => {
-    log("Worker stopping");
-    job.stop();
-    process.exit(0);
-  };
-  process.on("SIGTERM", stop);
-  process.on("SIGINT", stop);
+  process.exit(ok ? 0 : 1);
 }
 
 void main();
